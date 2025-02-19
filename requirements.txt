@@ -1,4 +1,6 @@
 streamlit
 yt-dlp
+yt_dlp.utils
 psycopg2-binary
 python-dotenv
+psycopg2.extras
