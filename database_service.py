@@ -1,4 +1,4 @@
-import psycopg2
+import psycopg2.extras
 from dotenv import load_dotenv
 import os
 from yt_extractor import get_info
@@ -40,7 +40,7 @@ def insert_workout(workout_data):
     
     conn = get_connection()
     try:
-        cur = conn.cursor()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute(query, values)
         inserted = cur.fetchone()
         conn.commit()
@@ -59,7 +59,7 @@ def delete_workout(workout_id):
     query = f"DELETE FROM {SCHEMA}.{TABLE} WHERE video_id = %s RETURNING *;"
     conn = get_connection()
     try:
-        cur = conn.cursor()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute(query, (workout_id,))
         deleted = cur.fetchone()
         conn.commit()
@@ -79,7 +79,7 @@ def get_all_workouts():
     query = f"SELECT video_id, channel, title, duration FROM {SCHEMA}.{TABLE};"
     conn = get_connection()
     try:
-        cur = conn.cursor()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute(query)
         rows = cur.fetchall()
         cur.close()
@@ -96,7 +96,7 @@ def get_workout_today():
     query = f"SELECT * FROM {SCHEMA}.{TABLE_TODAY} WHERE id = %s;"
     conn = get_connection()
     try:
-        cur = conn.cursor()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         cur.execute(query, (0,))
         row = cur.fetchone()
         cur.close()
@@ -115,7 +115,7 @@ def update_workout_today(workout_data, insert=False):
     workout_data['id'] = 0
     conn = get_connection()
     try:
-        cur = conn.cursor()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         if insert:
             # INSERT דינאמי לטבלת workout_today
             columns = workout_data.keys()
@@ -142,17 +142,3 @@ def update_workout_today(workout_data, insert=False):
         conn.rollback()
     finally:
         conn.close()
-
-# if __name__ == '__main__':
-    # # נסיון הכנסה של נתונים לטבלת workouts
-    # test_data = {
-    #     "video_id": "456",
-    #     "title": "Test Title"
-    # }
-    # inserted_row = insert_workout(test_data)
-    # print("Inserted row:", inserted_row)
-    
-
-    # infos = get_info("https://www.youtube.com/watch?v=KMkmA4i2FQc")
-    # inserted_row = insert_workout(infos)
-    # print("Inserted row:", inserted_row)
