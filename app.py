@@ -3,6 +3,17 @@ import streamlit as st
 from yt_extractor import get_info
 import database_service as dbs
 
+query_params = st.query_params
+
+# אם בפרמטרי ה-URL נמצא access_token והמשתמש עדיין לא נשמר ב-session, נשמור אותו
+if "access_token" in query_params and "user" not in st.session_state:
+    st.session_state["user"] = query_params["access_token"][0]
+
+# בדיקה אם המשתמש מאומת – אם לא, נעצור את הרצת הקוד ונציג הודעה
+if "user" not in st.session_state:
+    st.warning("You are not authenticated. Please sign in using the login page.")
+    st.markdown("[Go to Login Page](https://matbuha-fitness-app.streamlit.app/auth.html)")
+    st.stop()
 
 
 @st.cache_data
@@ -20,7 +31,7 @@ def get_duration_text(duration_s):
         text += f'{minutes:02d}:{seconds:02d}'
     return text
 
-st.title("Workout APP")
+st.title("Workout App")
 
 menu_options = ("Today's workout", "All workouts", "Add workout")
 selection = st.sidebar.selectbox("Menu", menu_options)

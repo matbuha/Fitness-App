@@ -1,30 +1,32 @@
+import streamlit as st
 import psycopg2.extras
 from dotenv import load_dotenv
 import os
 from yt_extractor import get_info
 
 # טעינת משתני סביבה מתוך .env
-load_dotenv()
 
-# משתנים להתחברות למסד הנתונים
-USER = os.getenv("user")
-PASSWORD = os.getenv("password")
-HOST = os.getenv("host")
-PORT = os.getenv("port")
-DBNAME = os.getenv("dbname")
-
-SCHEMA = "workout_repo"
-TABLE = "workouts"
-TABLE_TODAY = "workout_today"
 
 def get_connection():
-    return psycopg2.connect(
-        user=USER,
-        password=PASSWORD,
-        host=HOST,
-        port=PORT,
-        dbname=DBNAME
-    )
+    # נסה לקרוא מהסודות של Streamlit (שיקראו את הקובץ .streamlit/secrets.toml)
+    if "database" in st.secrets:
+        db_config = st.secrets["database"]
+        return psycopg2.connect(
+            user=db_config["user"],
+            password=db_config["password"],
+            host=db_config["host"],
+            port=db_config["port"],
+            dbname=db_config["dbname"]
+        )
+    else:
+        # במקרה של סביבה מקומית עם קובץ .env
+        return psycopg2.connect(
+            user=os.getenv("user"),
+            password=os.getenv("password"),
+            host=os.getenv("host"),
+            port=os.getenv("port"),
+            dbname=os.getenv("dbname")
+        )
 
 def insert_workout(workout_data):
     """
