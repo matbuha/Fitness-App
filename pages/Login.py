@@ -17,3 +17,5 @@ except Exception as e:
 
 # הטמעת תוכן ה-HTML בדף
 components.html(auth_html, height=700, scrolling=True)
+
+st.info("לאחר ההתחברות, תועבר אוטומטית לדף האפליקציה.")

@@ -12,7 +12,7 @@ if "access_token" in query_params and "user" not in st.session_state:
 # בדיקה אם המשתמש מאומת – אם לא, נעצור את הרצת הקוד ונציג הודעה
 if "user" not in st.session_state:
     st.warning("You are not authenticated. Please sign in using the login page.")
-    st.markdown("[Go to Login Page](https://matbuha-fitness-app.streamlit.app/auth.html)")
+    st.markdown("[Go to Login Page](https://matbuha-fitness-app.streamlit.app/?page=Login)")
     st.stop()
 
 
