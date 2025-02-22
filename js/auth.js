@@ -1,5 +1,7 @@
 const supabaseUrl = "https://kmwvlpganjabpcqsnrkx.supabase.co"
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imttd3ZscGdhbmphYnBjcXNucmt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NzU1MjgsImV4cCI6MjA1NTQ1MTUyOH0.MZhYAWfFI7YTDde44SIhZfSovqCT8DYAZbgtRw7nOEs"
+
+// יצירת לקוח Supabase
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
 
@@ -23,7 +25,7 @@ async function handleSignInWithGoogle(response) {
       console.log("Sign in successful!", data);
       alert("Signed in successfully!");
       // אם הכניסה הצליחה, העבר את המשתמש לדף הראשי של האפליקציה
-      window.location.href = "https://matbuha-fitness-app.streamlit.app/"; 
+      window.location.href = "index.html";
     }
   } catch (err) {
     console.error("Unexpected error:", err);

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <title>Fitness App - Login</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- טען את supabase-js -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <!-- טען את Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async></script>
+</head>
+<body>
+  <header>
+    <h1>Login / Sign Up with Google</h1>
+  </header>
+
+  <main>
+    <!-- הגדרת כפתור Google Sign In -->
+    <div id="g_id_onload"
+         data-client_id="303692713281-hu7llv8botfu6sjl8atlb5sc3jielmk3.apps.googleusercontent.com"
+         data-context="signin"
+         data-ux_mode="popup"
+         data-callback="handleSignInWithGoogle"
+         data-auto_select="true"
+         data-itp_support="true"
+         data-use_fedcm_for_prompt="true">
+    </div>
+
+    <div class="g_id_signin"
+         data-type="standard"
+         data-shape="pill"
+         data-theme="outline"
+         data-text="signin_with"
+         data-size="large"
+         data-logo_alignment="left">
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Fitness App</p>
+  </footer>
+
+  <!-- טען את קובץ ה-JS לאימות -->
+  <script src="js/auth.js" type="module"></script>
+</body>
+</html>
