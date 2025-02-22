@@ -32,7 +32,7 @@ if st.button("Sign In with Google"):
             st.error("No redirect URL received. Check your Supabase settings.")
             
 # בדיקת query parameters לאחר חזרה מגוגל
-query_params = st.experimental_get_query_params()
+query_params = st.query_params()
 if "access_token" in query_params:
     access_token = query_params["access_token"][0]
     # נניח כאן שה-token שקיבלת הוא ההוכחה שהמשתמש התחבר בהצלחה
