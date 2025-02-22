@@ -2,3 +2,4 @@ streamlit
 yt-dlp
 psycopg2-binary
 python-dotenv
+st-supabase-connection==2.0.1

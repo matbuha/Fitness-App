@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="he">
+<head>
+  <meta charset="UTF-8">
+  <title>Google Sign In with Supabase</title>
+  <!-- טען את supabase-js דרך CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+  <!-- טען את ספריית Google Identity Services -->
+  <script src="https://accounts.google.com/gsi/client" async></script>
+</head>
+<body>
+  <h1>Sign In with Google</h1>
+
+  <!-- הגדרת כפתור ההתחברות של גוגל -->
+  <div
+    id="g_id_onload"
+    data-client_id="303692713281-hu7llv8botfu6sjl8atlb5sc3jielmk3.apps.googleusercontent.com"
+    data-context="signin"
+    data-ux_mode="popup"
+    data-callback="handleSignInWithGoogle"
+    data-auto_select="true"
+    data-itp_support="true"
+    data-use_fedcm_for_prompt="true"
+  ></div>
+
+  <div
+    class="g_id_signin"
+    data-type="standard"
+    data-shape="pill"
+    data-theme="outline"
+    data-text="signin_with"
+    data-size="large"
+    data-logo_alignment="left"
+  ></div>
+
+  <!-- כלול את קובץ ה-JavaScript שמכיל את הלוגיקה -->
+  <script src="auth.js" type="module"></script>
+</body>
+</html>
