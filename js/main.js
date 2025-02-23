@@ -15,7 +15,7 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 // שליפת כל האימונים מהטבלה workouts
 async function fetchWorkouts() {
   const { data, error } = await supabaseClient
-    .from("workouts")
+    .from("workout_repo.workouts")
     .select("*");
     
   if (error) {
@@ -28,7 +28,7 @@ async function fetchWorkouts() {
 // הוספת אימון חדש
 async function addWorkout(workoutData) {
   const { data, error } = await supabaseClient
-    .from("workouts")
+    .from("workout_repo.workouts")
     .insert([workoutData]);
     
   if (error) {
@@ -41,7 +41,7 @@ async function addWorkout(workoutData) {
 // מחיקת אימון לפי video_id
 async function deleteWorkout(videoId) {
   const { data, error } = await supabaseClient
-    .from("workouts")
+    .from("workout_repo.workouts")
     .delete()
     .eq("video_id", videoId);
     
@@ -55,7 +55,7 @@ async function deleteWorkout(videoId) {
 // עדכון אימון לפי video_id
 async function updateWorkout(videoId, updatedData) {
   const { data, error } = await supabaseClient
-    .from("workouts")
+    .from("workout_repo.workouts")
     .update(updatedData)
     .eq("video_id", videoId);
 
