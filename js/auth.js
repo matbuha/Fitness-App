@@ -9,13 +9,10 @@ const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 async function handleSignInWithGoogle(response) {
   console.log("Google response:", response);
   
-  // response.credential מכיל את ה-ID token שקיבלנו מגוגל
   try {
-    // קריאה ל-signInWithIdToken של Supabase Auth
     const { data, error } = await supabaseClient.auth.signInWithIdToken({
       provider: 'google',
       token: response.credential
-      
     });
     
     if (error) {
@@ -24,7 +21,15 @@ async function handleSignInWithGoogle(response) {
     } else {
       console.log("Sign in successful!", data);
       alert("Signed in successfully!");
-      // אם הכניסה הצליחה, העבר את המשתמש לדף הראשי של האפליקציה
+      
+      // שמור את הטוקן ב-localStorage – נניח שהטוקן נמצא ב-data.session.access_token
+      if (data && data.session && data.session.access_token) {
+        localStorage.setItem("access_token", data.session.access_token);
+      } else {
+        console.warn("No token found in the response data.");
+      }
+      
+      // הפנה את המשתמש לדף הבית
       window.location.href = "index.html";
     }
   } catch (err) {
@@ -32,6 +37,7 @@ async function handleSignInWithGoogle(response) {
     alert("Unexpected error during sign in.");
   }
 }
+
 
 // הפוך את הפונקציה לזמינה גלובלית כך ש-Google Identity Services תוכל לגשת אליה
 window.handleSignInWithGoogle = handleSignInWithGoogle;
