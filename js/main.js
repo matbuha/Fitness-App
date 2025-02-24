@@ -5,7 +5,7 @@ if (!token) {
   window.location.href = "auth.html";
 }
 
-// יצירת לקוח Supabase (החלף את המפתח במפתח המתאים)
+// יצירת לקוח Supabase
 const supabaseUrl = "https://kmwvlpganjabpcqsnrkx.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imttd3ZscGdhbmphYnBjcXNucmt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NzU1MjgsImV4cCI6MjA1NTQ1MTUyOH0.MZhYAWfFI7YTDde44SIhZfSovqCT8DYAZbgtRw7nOEs";
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
@@ -21,6 +21,7 @@ async function checkSession() {
 }
 checkSession();
 
+
 // --- פונקציות CRUD ---
 
 // שליפת כל האימונים מהטבלה workouts
@@ -28,7 +29,6 @@ async function fetchWorkouts() {
   const { data, error } = await supabaseClient
     .from("workouts")
     .select("*");
-    
   if (error) {
     console.error("Error fetching workouts:", error);
     return [];
@@ -36,12 +36,11 @@ async function fetchWorkouts() {
   return data;
 }
 
-// הוספת אימון חדש
+// הוספת אימון חדש (משתמשים ב-upsert כדי למנוע כפילויות, על פי video_id)
 async function addWorkout(workoutData) {
   const { data, error } = await supabaseClient
     .from("workouts")
     .upsert([workoutData], { onConflict: 'video_id', returning: 'representation' });
-    
   if (error) {
     console.error("Error adding workout:", error);
     return null;
@@ -49,16 +48,12 @@ async function addWorkout(workoutData) {
   return data ? data[0] : null;
 }
 
-
-
-
 // מחיקת אימון לפי video_id
 async function deleteWorkout(videoId) {
   const { data, error } = await supabaseClient
     .from("workouts")
     .delete()
     .eq("video_id", videoId);
-    
   if (error) {
     console.error("Error deleting workout:", error);
     return null;
@@ -72,7 +67,6 @@ async function updateWorkout(videoId, updatedData) {
     .from("workouts")
     .update(updatedData)
     .eq("video_id", videoId);
-
   if (error) {
     console.error("Error updating workout:", error);
     return null;
@@ -80,24 +74,24 @@ async function updateWorkout(videoId, updatedData) {
   return data[0];
 }
 
+
 // --- פונקציות להצגת המידע בממשק ---
 
-// הצגת כל האימונים עם עיצוב כרטיסים (Bootstrap)
+// הצגת כל האימונים (עם כרטיסי Bootstrap) – התוכן מיושר לימין (text-end)
 async function showAllWorkouts() {
   const workouts = await fetchWorkouts();
   const content = document.getElementById("content-area");
-  
   if (workouts.length === 0) {
     content.innerHTML = `<p>No workouts found.</p>`;
   } else {
     content.innerHTML = workouts.map(w => `
       <div class="card mb-3">
-        <div class="card-body">
+        <div class="card-body text-end">
           <h5 class="card-title">${w.title}</h5>
           <p class="card-text">ערוץ: ${w.channel}</p>
           <p class="card-text">משך: ${w.duration}</p>
-          <p class="card-text">צפיות: ${w.view_count}</p>
-          <p class="card-text">לייקים: ${w.like_count}</p>
+          <p class="card-text">צפיות: ${w.view_count || ''}</p>
+          <p class="card-text">לייקים: ${w.like_count || ''}</p>
           <img src="https://img.youtube.com/vi/${w.video_id}/hqdefault.jpg" alt="Thumbnail" class="img-fluid mb-2">
           <a href="https://youtu.be/${w.video_id}" target="_blank" class="btn btn-primary">Watch Video</a>
           <button class="btn btn-danger delete-workout-btn" data-video-id="${w.video_id}">Delete</button>
@@ -105,8 +99,7 @@ async function showAllWorkouts() {
       </div>
     `).join("");
   }
-  
-  // הוספת מאזיני אירועים לכל כפתורי המחיקה
+  // הוספת מאזיני אירועים לכל כפתורי מחיקה
   const deleteButtons = document.querySelectorAll(".delete-workout-btn");
   deleteButtons.forEach(button => {
     button.addEventListener("click", function() {
@@ -120,33 +113,22 @@ async function showAllWorkouts() {
   });
 }
 
-
-// טיפול באירוע מחיקה – מציג אישור לפני המחיקה
-function handleDeleteWorkout(videoId) {
-  if (confirm("האם אתה בטוח שברצונך למחוק את האימון?")) {
-    deleteWorkout(videoId).then(() => {
-      showAllWorkouts();
-    });
-  }
-}
-
-// הצגת אימון יומי – במקרה זה, בוחרים אימון אקראי
+// הצגת אימון יומי – בוחרים אימון אקראי ומציגים כרטיס עם המידע
 async function showTodaysWorkout() {
   const workouts = await fetchWorkouts();
   const content = document.getElementById("content-area");
-  
   if (workouts.length === 0) {
     content.innerHTML = `<p>No workouts available for today.</p>`;
   } else {
     const randomWorkout = workouts[Math.floor(Math.random() * workouts.length)];
     content.innerHTML = `
-      <div class="card">
-        <div class="card-body">
+      <div class="card mb-3">
+        <div class="card-body text-end">
           <h5 class="card-title">${randomWorkout.title}</h5>
           <p class="card-text">ערוץ: ${randomWorkout.channel}</p>
           <p class="card-text">משך: ${randomWorkout.duration}</p>
-          <p class="card-text">צפיות: ${randomWorkout.view_count}</p>
-          <p class="card-text">לייקים: ${randomWorkout.like_count}</p>
+          <p class="card-text">צפיות: ${randomWorkout.view_count || ''}</p>
+          <p class="card-text">לייקים: ${randomWorkout.like_count || ''}</p>
           <img src="https://img.youtube.com/vi/${randomWorkout.video_id}/hqdefault.jpg" alt="Thumbnail" class="img-fluid mb-2">
           <a href="https://youtu.be/${randomWorkout.video_id}" target="_blank" class="btn btn-primary">Watch Video</a>
         </div>
@@ -155,67 +137,7 @@ async function showTodaysWorkout() {
   }
 }
 
-// פונקציה להמרת ISO8601 Duration לשניות
-function isoDurationToSeconds(isoDuration) {
-  // דוגמה בסיסית לפענוח פורמט ISO8601, לדוגמה: "PT1H2M3S"
-  const regex = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
-  const matches = isoDuration.match(regex);
-  if (!matches) return 0;
-  const hours = parseInt(matches[1] || 0);
-  const minutes = parseInt(matches[2] || 0);
-  const seconds = parseInt(matches[3] || 0);
-  return hours * 3600 + minutes * 60 + seconds;
-}
-
-// פונקציה לשליפת מידע מ-YouTube באמצעות Data API
-async function getVideoInfo(url) {
-  // חילוץ videoId מה-URL באמצעות Regex
-  const regex = /(?:youtube\.com\/.*(?:\?|\&)v=|youtu\.be\/)([^&\n?#]+)/;
-  const match = url.match(regex);
-  if (!match || match.length < 2) {
-    alert("Invalid YouTube URL");
-    return null;
-  }
-  const videoId = match[1];
-
-  // קריאה ל-YouTube Data API לקבלת פרטי הסרטון
-  const apiKey = 'AIzaSyAL_pDebENP8_IF4AI0_6YWY3xCjHklfH0';
-  const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoId}&key=${apiKey}`;
-  
-  try {
-    const response = await fetch(apiUrl);
-    if (!response.ok) {
-      console.error('YouTube API error:', response.statusText);
-      return null;
-    }
-    const data = await response.json();
-    if (data.items && data.items.length > 0) {
-      const item = data.items[0];
-      const snippet = item.snippet;
-      const details = item.contentDetails;
-      const stats = item.statistics;
-      const durationSeconds = isoDurationToSeconds(details.duration);
-      return {
-        video_id: videoId,
-        title: snippet.title,
-        channel: snippet.channelTitle,
-        channel_id: snippet.channelId,
-        duration: durationSeconds,
-        view_count: stats.viewCount,
-        like_count: stats.likeCount,
-        tags: snippet.tags,
-        category_id: snippet.categoryId
-      };
-    } else {
-      return null;
-    }
-  } catch (error) {
-    console.error('Error fetching video info:', error);
-    return null;
-  }
-}
-
-// עדכון טופס הוספת אימון: המשתמש מזין רק YouTube URL
+// הצגת טופס להוספת אימון: המשתמש מזין רק YouTube URL
 function showAddWorkoutForm() {
   const content = document.getElementById("content-area");
   content.innerHTML = `
@@ -257,11 +179,8 @@ function showAddWorkoutForm() {
   });
 }
 
-
 function showUpdateWorkoutForm(videoId, workoutData) {
   const content = document.getElementById("content-area");
-  
-  // יצירת טופס עם ערכים קיימים
   content.innerHTML = `
     <h3>Update Workout</h3>
     <form id="update-workout-form">
@@ -282,7 +201,7 @@ function showUpdateWorkoutForm(videoId, workoutData) {
         <input type="text" class="form-control" id="update_duration" value="${workoutData.duration}" required>
       </div>
       <button type="submit" class="btn btn-primary">Update Workout</button>
-      <button type="button" class="btn btn-secondary" onclick="showAllWorkouts()">Cancel</button>
+      <button type="button" class="btn btn-secondary" id="cancel-update">Cancel</button>
     </form>
   `;
   
@@ -298,47 +217,125 @@ function showUpdateWorkoutForm(videoId, workoutData) {
       showAllWorkouts();
     });
   });
-}
-
-// --- אתחול סרגל הצד והאזנה לאירועים ---
-function initSidebar() {
-  document.getElementById("btn-todays").addEventListener("click", showTodaysWorkout);
-  document.getElementById("btn-all").addEventListener("click", showAllWorkouts);
-  document.getElementById("btn-add").addEventListener("click", showAddWorkoutForm);
-  document.getElementById("btn-logout").addEventListener("click", function() {
-    localStorage.removeItem("access_token");
-    window.location.href = "auth.html";
+  
+  document.getElementById("cancel-update").addEventListener("click", () => {
+    showAllWorkouts();
   });
 }
 
-// --- בניית מבנה הדף הראשי עם Sidebar בעזרת Bootstrap ---
-document.getElementById("main-content").innerHTML = `
-  <div class="container-fluid">
-    <div class="row">
-      <nav class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
-        <div class="position-sticky pt-3">
-          <ul class="nav flex-column">
-            <li class="nav-item">
-              <button class="nav-link btn btn-link" id="btn-todays">Today's Workout</button>
-            </li>
-            <li class="nav-item">
-              <button class="nav-link btn btn-link" id="btn-all">All Workouts</button>
-            </li>
-            <li class="nav-item">
-              <button class="nav-link btn btn-link" id="btn-add">Add Workout</button>
-            </li>
-            <li class="nav-item">
-              <button class="nav-link btn btn-link text-danger" id="btn-logout">Logout</button>
-            </li>
-          </ul>
-        </div>
-      </nav>
-      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" id="content-area">
-        <h2>ברוכים הבאים ל-Fitness App!</h2>
-        <p>בחר אופציה מהסרגל הצד.</p>
-      </main>
-    </div>
-  </div>
-`;
+// פונקציה להמרת ISO8601 Duration לשניות
+function isoDurationToSeconds(isoDuration) {
+  const regex = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
+  const matches = isoDuration.match(regex);
+  if (!matches) return 0;
+  const hours = parseInt(matches[1] || 0);
+  const minutes = parseInt(matches[2] || 0);
+  const seconds = parseInt(matches[3] || 0);
+  return hours * 3600 + minutes * 60 + seconds;
+}
 
-initSidebar();
+// פונקציה לשליפת מידע מ-YouTube באמצעות Data API
+async function getVideoInfo(url) {
+  const regex = /(?:youtube\.com\/.*(?:\?|\&)v=|youtu\.be\/)([^&\n?#]+)/;
+  const match = url.match(regex);
+  if (!match || match.length < 2) {
+    alert("Invalid YouTube URL");
+    return null;
+  }
+  const videoId = match[1];
+  const apiKey = 'AIzaSyAL_pDebENP8_IF4AI0_6YWY3xCjHklfH0';
+  const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoId}&key=${apiKey}`;
+  
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      console.error('YouTube API error:', response.statusText);
+      return null;
+    }
+    const data = await response.json();
+    if (data.items && data.items.length > 0) {
+      const item = data.items[0];
+      const snippet = item.snippet;
+      const details = item.contentDetails;
+      const stats = item.statistics;
+      const durationSeconds = isoDurationToSeconds(details.duration);
+      return {
+        video_id: videoId,
+        title: snippet.title,
+        channel: snippet.channelTitle,
+        channel_id: snippet.channelId,
+        duration: durationSeconds,
+        view_count: stats.viewCount,
+        like_count: stats.likeCount,
+        tags: snippet.tags,
+        category_id: snippet.categoryId
+      };
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching video info:', error);
+    return null;
+  }
+}
+
+// אתחול סרגל הצד - אנו עושים זאת באמצעות מאזיני אירועים למחלקות משותפות, כפי שהוגדר למעלה.
+document.addEventListener("DOMContentLoaded", function() {
+  // כאן לא צריך לעדכן את ה-layout של main-content, כי זה נעשה ב-index.html
+  // אנו רק נוודא שהמאזינים עבור הניווט (מובייל ודסקטופ) נרשמים
+
+  // מאזין לכל כפתורי "Today's Workout"
+  const navTodaysButtons = document.querySelectorAll(".nav-todays");
+  navTodaysButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      showTodaysWorkout();
+      // סגירת Offcanvas אם קיים
+      const offcanvasEl = document.getElementById("offcanvasSidebar");
+      if (offcanvasEl) {
+        const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+        if (bsOffcanvas) {
+          bsOffcanvas.hide();
+        }
+      }
+    });
+  });
+
+  // מאזין לכל כפתורי "All Workouts"
+  const navAllButtons = document.querySelectorAll(".nav-all");
+  navAllButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      showAllWorkouts();
+      const offcanvasEl = document.getElementById("offcanvasSidebar");
+      if (offcanvasEl) {
+        const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+        if (bsOffcanvas) {
+          bsOffcanvas.hide();
+        }
+      }
+    });
+  });
+
+  // מאזין לכל כפתורי "Add Workout"
+  const navAddButtons = document.querySelectorAll(".nav-add");
+  navAddButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      showAddWorkoutForm();
+      const offcanvasEl = document.getElementById("offcanvasSidebar");
+      if (offcanvasEl) {
+        const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
+        if (bsOffcanvas) {
+          bsOffcanvas.hide();
+        }
+      }
+    });
+  });
+
+  // מאזין לכל כפתורי "Logout"
+  const navLogoutButtons = document.querySelectorAll(".nav-logout");
+  navLogoutButtons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      localStorage.removeItem("access_token");
+      window.location.href = "auth.html";
+    });
+  });
+});
