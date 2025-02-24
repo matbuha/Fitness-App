@@ -132,44 +132,102 @@ async function showTodaysWorkout() {
   }
 }
 
-// הצגת טופס להוספת אימון חדש
+// פונקציה להמרת ISO8601 Duration לשניות
+function isoDurationToSeconds(isoDuration) {
+  // דוגמה בסיסית לפענוח פורמט ISO8601, לדוגמה: "PT1H2M3S"
+  const regex = /PT(?:(\d+)H)?(?:(\d+)M)?(?:(\d+)S)?/;
+  const matches = isoDuration.match(regex);
+  if (!matches) return 0;
+  const hours = parseInt(matches[1] || 0);
+  const minutes = parseInt(matches[2] || 0);
+  const seconds = parseInt(matches[3] || 0);
+  return hours * 3600 + minutes * 60 + seconds;
+}
+
+// פונקציה לשליפת מידע מ-YouTube באמצעות Data API
+async function getVideoInfo(url) {
+  // חילוץ videoId מה-URL באמצעות Regex
+  const regex = /(?:youtube\.com\/.*(?:\?|\&)v=|youtu\.be\/)([^&\n?#]+)/;
+  const match = url.match(regex);
+  if (!match || match.length < 2) {
+    alert("Invalid YouTube URL");
+    return null;
+  }
+  const videoId = match[1];
+
+  // קריאה ל-YouTube Data API לקבלת פרטי הסרטון
+  const apiKey = 'AIzaSyAL_pDebENP8_IF4AI0_6YWY3xCjHklfH0';
+  const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${videoId}&key=${apiKey}`;
+  
+  try {
+    const response = await fetch(apiUrl);
+    if (!response.ok) {
+      console.error('YouTube API error:', response.statusText);
+      return null;
+    }
+    const data = await response.json();
+    if (data.items && data.items.length > 0) {
+      const item = data.items[0];
+      const snippet = item.snippet;
+      const details = item.contentDetails;
+      const durationSeconds = isoDurationToSeconds(details.duration);
+      return {
+        video_id: videoId,
+        title: snippet.title,
+        channel: snippet.channelTitle,
+        duration: durationSeconds
+      };
+    } else {
+      return null;
+    }
+  } catch (error) {
+    console.error('Error fetching video info:', error);
+    return null;
+  }
+}
+
+// עדכון טופס הוספת אימון: המשתמש מזין רק YouTube URL
 function showAddWorkoutForm() {
   const content = document.getElementById("content-area");
   content.innerHTML = `
     <form id="add-workout-form">
       <div class="mb-3">
-        <label for="video_id" class="form-label">Video ID</label>
-        <input type="text" class="form-control" id="video_id" required>
-      </div>
-      <div class="mb-3">
-        <label for="title" class="form-label">Title</label>
-        <input type="text" class="form-control" id="title" required>
-      </div>
-      <div class="mb-3">
-        <label for="channel" class="form-label">Channel</label>
-        <input type="text" class="form-control" id="channel" required>
-      </div>
-      <div class="mb-3">
-        <label for="duration" class="form-label">Duration</label>
-        <input type="text" class="form-control" id="duration" required>
+        <label for="video_url" class="form-label">YouTube Video URL</label>
+        <input type="text" class="form-control" id="video_url" placeholder="https://www.youtube.com/watch?v=..." required>
       </div>
       <button type="submit" class="btn btn-success">Add Workout</button>
     </form>
+    <div id="video-info" class="mt-3"></div>
   `;
-  document.getElementById("add-workout-form").addEventListener("submit", function(e) {
+
+  document.getElementById("add-workout-form").addEventListener("submit", async function(e) {
     e.preventDefault();
-    const workoutData = {
-      video_id: document.getElementById("video_id").value,
-      title: document.getElementById("title").value,
-      channel: document.getElementById("channel").value,
-      duration: document.getElementById("duration").value
-    };
-    addWorkout(workoutData).then(() => {
-      alert("Workout added!");
-      showAllWorkouts();
-    });
+    const url = document.getElementById("video_url").value;
+    const videoInfoDiv = document.getElementById("video-info");
+    videoInfoDiv.innerHTML = "<p>Fetching video info...</p>";
+    
+    const workoutData = await getVideoInfo(url);
+    if (!workoutData) {
+      videoInfoDiv.innerHTML = "<p>Could not retrieve video info. Please check the URL.</p>";
+      return;
+    }
+    
+    // הצגת המידע שהתקבל לצורך אישור המשתמש
+    videoInfoDiv.innerHTML = `
+      <p><strong>Title:</strong> ${workoutData.title}</p>
+      <p><strong>Channel:</strong> ${workoutData.channel}</p>
+      <p><strong>Duration (sec):</strong> ${workoutData.duration}</p>
+    `;
+    
+    if (confirm("Add this workout?")) {
+      addWorkout(workoutData).then(() => {
+        alert("Workout added!");
+        showAllWorkouts();
+      });
+    }
   });
 }
+
 
 function showUpdateWorkoutForm(videoId, workoutData) {
   const content = document.getElementById("content-area");
