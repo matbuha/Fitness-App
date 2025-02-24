@@ -40,7 +40,7 @@ async function fetchWorkouts() {
 async function addWorkout(workoutData) {
   const { data, error } = await supabaseClient
     .from("workouts")
-    .upsert([workoutData], { returning: 'representation' });
+    .upsert([workoutData], { onConflict: 'video_id', returning: 'representation' });
     
   if (error) {
     console.error("Error adding workout:", error);
@@ -48,6 +48,7 @@ async function addWorkout(workoutData) {
   }
   return data ? data[0] : null;
 }
+
 
 
 
@@ -95,13 +96,29 @@ async function showAllWorkouts() {
           <h5 class="card-title">${w.title}</h5>
           <p class="card-text">ערוץ: ${w.channel}</p>
           <p class="card-text">משך: ${w.duration}</p>
+          <p class="card-text">צפיות: ${w.view_count}</p>
+          <p class="card-text">לייקים: ${w.like_count}</p>
           <a href="https://youtu.be/${w.video_id}" target="_blank" class="btn btn-primary">Watch Video</a>
-          <button class="btn btn-danger" onclick="handleDeleteWorkout('${w.video_id}')">Delete</button>
+          <button class="btn btn-danger delete-workout-btn" data-video-id="${w.video_id}">Delete</button>
         </div>
       </div>
     `).join("");
   }
+  
+  // הוספת מאזיני אירועים לכל כפתורי המחיקה
+  const deleteButtons = document.querySelectorAll(".delete-workout-btn");
+  deleteButtons.forEach(button => {
+    button.addEventListener("click", function() {
+      const videoId = this.getAttribute("data-video-id");
+      if (confirm("האם אתה בטוח שברצונך למחוק את האימון?")) {
+        deleteWorkout(videoId).then(() => {
+          showAllWorkouts();
+        });
+      }
+    });
+  });
 }
+
 
 // טיפול באירוע מחיקה – מציג אישור לפני המחיקה
 function handleDeleteWorkout(videoId) {
