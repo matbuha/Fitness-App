@@ -18,10 +18,12 @@
 <body class="d-flex align-items-center py-4 bg-body-tertiary">
   <main class="form-signin w-100 m-auto">
     <form>
-      <img class="mb-4" src="https://via.placeholder.com/72x57" alt="Logo" width="72" height="57">
+      <div class="text-center">
+        <img class="mb-4" src="https://cdn.pixabay.com/photo/2022/07/17/19/46/orange-7328244_1280.png" alt="Logo" width="72" height="57">
+      </div>
       <h1 class="h3 mb-3 fw-normal text-center">Sign in with Google</h1>
       
-      <!-- Google Identity Services: הגדרת כפתור התחברות -->
+      <!-- Google Identity Services -->
       <div id="g_id_onload"
            data-client_id="303692713281-hu7llv8botfu6sjl8atlb5sc3jielmk3.apps.googleusercontent.com"
            data-context="signin"
@@ -31,8 +33,8 @@
            data-itp_support="true"
            data-use_fedcm_for_prompt="true">
       </div>
-
-      <div class="g_id_signin"
+      
+      <div class="g_id_signin d-flex justify-content-center"
            data-type="standard"
            data-shape="pill"
            data-theme="outline"
@@ -40,10 +42,11 @@
            data-size="large"
            data-logo_alignment="left">
       </div>
-
+  
       <p class="mt-5 mb-3 text-body-secondary text-center">© 2025 Fitness App</p>
     </form>
   </main>
+  
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
