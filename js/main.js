@@ -98,6 +98,7 @@ async function showAllWorkouts() {
           <p class="card-text">משך: ${w.duration}</p>
           <p class="card-text">צפיות: ${w.view_count}</p>
           <p class="card-text">לייקים: ${w.like_count}</p>
+          <img src="https://img.youtube.com/vi/${w.video_id}/hqdefault.jpg" alt="Thumbnail" class="img-fluid mb-2">
           <a href="https://youtu.be/${w.video_id}" target="_blank" class="btn btn-primary">Watch Video</a>
           <button class="btn btn-danger delete-workout-btn" data-video-id="${w.video_id}">Delete</button>
         </div>
@@ -144,6 +145,8 @@ async function showTodaysWorkout() {
           <h5 class="card-title">${randomWorkout.title}</h5>
           <p class="card-text">ערוץ: ${randomWorkout.channel}</p>
           <p class="card-text">משך: ${randomWorkout.duration}</p>
+          <p class="card-text">צפיות: ${randomWorkout.view_count}</p>
+          <p class="card-text">לייקים: ${randomWorkout.like_count}</p>
           <a href="https://youtu.be/${randomWorkout.video_id}" target="_blank" class="btn btn-primary">Watch Video</a>
         </div>
       </div>
