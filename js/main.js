@@ -40,14 +40,15 @@ async function fetchWorkouts() {
 async function addWorkout(workoutData) {
   const { data, error } = await supabaseClient
     .from("workouts")
-    .insert([workoutData]);
+    .insert([workoutData], { returning: 'representation' });
     
   if (error) {
     console.error("Error adding workout:", error);
     return null;
   }
-  return data[0];
+  return data ? data[0] : null;
 }
+
 
 // מחיקת אימון לפי video_id
 async function deleteWorkout(videoId) {
