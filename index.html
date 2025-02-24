@@ -43,7 +43,7 @@
           <button class="nav-link btn btn-link nav-add" id="btn-add-mobile">Add Workout</button>
         </li>
         <li class="nav-item">
-          <button class="nav-link btn btn-link text-danger nav-logout" id="btn-logout-mobile">Logout</button>
+          <button class="nav-link btn btn-link text-danger nav-logout" id="btn-logout-mobile">Sign out</button>
         </li>
       </ul>
     </div>
@@ -53,47 +53,49 @@
   <main id="main-content">
     <div class="container-fluid">
       <div class="row">
-        <!-- Sidebar for desktop: מופיע רק במסכים md ומעלה -->
+        <!-- Desktop Sidebar (מופיע רק במסכים md ומעלה) -->
         <nav class="col-md-3 col-lg-2 d-none d-md-flex bg-light sidebar flex-column p-3">
-          <a href="/" class="d-flex align-items-center mb-3 text-decoration-none text-dark">
-            <i class="bi bi-bootstrap fs-2 me-2"></i>
-            <span class="fs-4">Sidebar</span>
+          <a href="https://matbuha.github.io/Fitness-App/index.html" class="d-flex align-items-center mb-3 text-decoration-none text-dark">
+            <svg class="bi pe-none me-2" width="40" height="32">
+              <use xlink:href="#bootstrap"></use>
+            </svg>
+            <span class="fs-4">Fitness App</span>
           </a>
           <hr>
           <ul class="nav nav-pills flex-column mb-auto">
             <li class="nav-item">
-              <button class="nav-link btn btn-link nav-todays" id="btn-todays">Today's Workout</button>
+              <a href="#" class="nav-link active nav-todays" id="btn-todays">Today's Workout</a>
             </li>
             <li class="nav-item">
-              <button class="nav-link btn btn-link nav-all" id="btn-all">All Workouts</button>
+              <a href="#" class="nav-link text-dark nav-all" id="btn-all">All Workouts</a>
             </li>
             <li class="nav-item">
-              <button class="nav-link btn btn-link nav-add" id="btn-add">Add Workout</button>
+              <a href="#" class="nav-link text-dark nav-add" id="btn-add">Add Workout</a>
             </li>
             <li class="nav-item">
-              <button class="nav-link btn btn-link text-danger nav-logout" id="btn-logout">Logout</button>
+              <a href="#" class="nav-link text-danger nav-logout" id="btn-logout">Sign out</a>
             </li>
           </ul>
           <hr>
           <div class="dropdown">
             <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="https://github.com/mdo.png" alt="" width="32" height="32" class="rounded-circle me-2">
-              <strong>mdo</strong>
+              <img src="https://lh3.googleusercontent.com/a/ACg8ocKd2p17vEafitMC6ENmHJKSBqCEPBHm2BGwWzM5kyVGL7PgJULaPA=s96-c" alt="" width="32" height="32" class="rounded-circle me-2">
+              <strong>Ariel Ben Zikri</strong>
             </a>
             <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
               <li><a class="dropdown-item" href="#">New project...</a></li>
               <li><a class="dropdown-item" href="#">Settings</a></li>
               <li><a class="dropdown-item" href="#">Profile</a></li>
               <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item" href="#">Sign out</a></li>
+              <li><a class="dropdown-item nav-logout" id="btn-logout-desktop" href="#">Sign out</a></li>
             </ul>
           </div>
         </nav>
         <!-- Main Content Area -->
-        <div class="col-md-9 col-lg-10 p-3">
+        <div class="col-md-9 col-lg-10 p-3" id="content-area">
           <h2 class="mb-3">ברוכים הבאים ל-Fitness App!</h2>
           <p>בחר אופציה מהסרגל הצד.</p>
-          <!-- כאן ייטען שאר התוכן הדינמי שלך -->
+          <!-- כאן ייטען התוכן הדינמי -->
         </div>
       </div>
     </div>

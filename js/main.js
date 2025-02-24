@@ -36,7 +36,7 @@ async function fetchWorkouts() {
   return data;
 }
 
-// הוספת אימון חדש (משתמשים ב-upsert כדי למנוע כפילויות, על פי video_id)
+// הוספת אימון חדש (upsert כדי למנוע כפילויות, לפי video_id)
 async function addWorkout(workoutData) {
   const { data, error } = await supabaseClient
     .from("workouts")
@@ -77,7 +77,7 @@ async function updateWorkout(videoId, updatedData) {
 
 // --- פונקציות להצגת המידע בממשק ---
 
-// הצגת כל האימונים (עם כרטיסי Bootstrap) – התוכן מיושר לימין (text-end)
+// הצגת כל האימונים
 async function showAllWorkouts() {
   const workouts = await fetchWorkouts();
   const content = document.getElementById("content-area");
@@ -99,7 +99,7 @@ async function showAllWorkouts() {
       </div>
     `).join("");
   }
-  // הוספת מאזיני אירועים לכל כפתורי מחיקה
+  // הוספת מאזיני אירועים לכפתורי מחיקה
   const deleteButtons = document.querySelectorAll(".delete-workout-btn");
   deleteButtons.forEach(button => {
     button.addEventListener("click", function() {
@@ -113,7 +113,7 @@ async function showAllWorkouts() {
   });
 }
 
-// הצגת אימון יומי – בוחרים אימון אקראי ומציגים כרטיס עם המידע
+// הצגת אימון יומי
 async function showTodaysWorkout() {
   const workouts = await fetchWorkouts();
   const content = document.getElementById("content-area");
@@ -137,7 +137,7 @@ async function showTodaysWorkout() {
   }
 }
 
-// הצגת טופס להוספת אימון: המשתמש מזין רק YouTube URL
+// הצגת טופס הוספת אימון: המשתמש מזין רק YouTube URL
 function showAddWorkoutForm() {
   const content = document.getElementById("content-area");
   content.innerHTML = `
@@ -150,7 +150,6 @@ function showAddWorkoutForm() {
     </form>
     <div id="video-info" class="mt-3"></div>
   `;
-
   document.getElementById("add-workout-form").addEventListener("submit", async function(e) {
     e.preventDefault();
     const url = document.getElementById("video_url").value;
@@ -163,7 +162,6 @@ function showAddWorkoutForm() {
       return;
     }
     
-    // הצגת המידע שהתקבל לצורך אישור המשתמש
     videoInfoDiv.innerHTML = `
       <p><strong>Title:</strong> ${workoutData.title}</p>
       <p><strong>Channel:</strong> ${workoutData.channel}</p>
@@ -179,6 +177,7 @@ function showAddWorkoutForm() {
   });
 }
 
+// הצגת טופס עדכון אימון
 function showUpdateWorkoutForm(videoId, workoutData) {
   const content = document.getElementById("content-area");
   content.innerHTML = `
@@ -204,7 +203,6 @@ function showUpdateWorkoutForm(videoId, workoutData) {
       <button type="button" class="btn btn-secondary" id="cancel-update">Cancel</button>
     </form>
   `;
-  
   document.getElementById("update-workout-form").addEventListener("submit", function(e) {
     e.preventDefault();
     const updatedData = {
@@ -217,7 +215,6 @@ function showUpdateWorkoutForm(videoId, workoutData) {
       showAllWorkouts();
     });
   });
-  
   document.getElementById("cancel-update").addEventListener("click", () => {
     showAllWorkouts();
   });
@@ -245,7 +242,6 @@ async function getVideoInfo(url) {
   const videoId = match[1];
   const apiKey = 'AIzaSyAL_pDebENP8_IF4AI0_6YWY3xCjHklfH0';
   const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoId}&key=${apiKey}`;
-  
   try {
     const response = await fetch(apiUrl);
     if (!response.ok) {
@@ -279,17 +275,13 @@ async function getVideoInfo(url) {
   }
 }
 
-// אתחול סרגל הצד - אנו עושים זאת באמצעות מאזיני אירועים למחלקות משותפות, כפי שהוגדר למעלה.
+// אתחול סרגל הצד והאזנה לאירועים
 document.addEventListener("DOMContentLoaded", function() {
-  // כאן לא צריך לעדכן את ה-layout של main-content, כי זה נעשה ב-index.html
-  // אנו רק נוודא שהמאזינים עבור הניווט (מובייל ודסקטופ) נרשמים
-
   // מאזין לכל כפתורי "Today's Workout"
   const navTodaysButtons = document.querySelectorAll(".nav-todays");
   navTodaysButtons.forEach(btn => {
     btn.addEventListener("click", () => {
       showTodaysWorkout();
-      // סגירת Offcanvas אם קיים
       const offcanvasEl = document.getElementById("offcanvasSidebar");
       if (offcanvasEl) {
         const bsOffcanvas = bootstrap.Offcanvas.getInstance(offcanvasEl);
