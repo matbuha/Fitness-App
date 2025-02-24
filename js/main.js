@@ -5,16 +5,19 @@ if (!token) {
   window.location.href = "auth.html";
 }
 
-
 // יצירת לקוח Supabase (החלף את המפתח במפתח המתאים)
 const supabaseUrl = "https://kmwvlpganjabpcqsnrkx.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imttd3ZscGdhbmphYnBjcXNucmt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NzU1MjgsImV4cCI6MjA1NTQ1MTUyOH0.MZhYAWfFI7YTDde44SIhZfSovqCT8DYAZbgtRw7nOEs";
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-
 async function checkSession() {
   const { data, error } = await supabaseClient.auth.getSession();
   console.log("Current session:", data.session);
+  if (data.session && data.session.user) {
+    console.log("auth.uid:", data.session.user.id);
+  } else {
+    console.warn("No authenticated user found in session.");
+  }
 }
 checkSession();
 
@@ -252,5 +255,3 @@ document.getElementById("main-content").innerHTML = `
 `;
 
 initSidebar();
-
-
