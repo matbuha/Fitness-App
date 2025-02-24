@@ -40,7 +40,7 @@ async function fetchWorkouts() {
 async function addWorkout(workoutData) {
   const { data, error } = await supabaseClient
     .from("workouts")
-    .insert([workoutData], { returning: 'representation' });
+    .upsert([workoutData], { returning: 'representation' });
     
   if (error) {
     console.error("Error adding workout:", error);
@@ -48,6 +48,7 @@ async function addWorkout(workoutData) {
   }
   return data ? data[0] : null;
 }
+
 
 
 // מחיקת אימון לפי video_id
@@ -158,7 +159,7 @@ async function getVideoInfo(url) {
 
   // קריאה ל-YouTube Data API לקבלת פרטי הסרטון
   const apiKey = 'AIzaSyAL_pDebENP8_IF4AI0_6YWY3xCjHklfH0';
-  const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails&id=${videoId}&key=${apiKey}`;
+  const apiUrl = `https://www.googleapis.com/youtube/v3/videos?part=snippet,contentDetails,statistics&id=${videoId}&key=${apiKey}`;
   
   try {
     const response = await fetch(apiUrl);
@@ -171,12 +172,18 @@ async function getVideoInfo(url) {
       const item = data.items[0];
       const snippet = item.snippet;
       const details = item.contentDetails;
+      const stats = item.statistics;
       const durationSeconds = isoDurationToSeconds(details.duration);
       return {
         video_id: videoId,
         title: snippet.title,
         channel: snippet.channelTitle,
-        duration: durationSeconds
+        channel_id: snippet.channelId,
+        duration: durationSeconds,
+        view_count: stats.viewCount,
+        like_count: stats.likeCount,
+        tags: snippet.tags,
+        category_id: snippet.categoryId
       };
     } else {
       return null;
