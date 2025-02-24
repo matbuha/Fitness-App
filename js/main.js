@@ -147,6 +147,7 @@ async function showTodaysWorkout() {
           <p class="card-text">משך: ${randomWorkout.duration}</p>
           <p class="card-text">צפיות: ${randomWorkout.view_count}</p>
           <p class="card-text">לייקים: ${randomWorkout.like_count}</p>
+          <img src="https://img.youtube.com/vi/${randomWorkout.video_id}/hqdefault.jpg" alt="Thumbnail" class="img-fluid mb-2">
           <a href="https://youtu.be/${randomWorkout.video_id}" target="_blank" class="btn btn-primary">Watch Video</a>
         </div>
       </div>
