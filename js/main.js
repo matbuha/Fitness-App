@@ -15,6 +15,11 @@ async function checkSession() {
   console.log("Current session:", data.session);
   if (data.session && data.session.user) {
     console.log("auth.uid:", data.session.user.id);
+    // עדכון פרופיל המשתמש בדף
+    const userPic = data.session.user.user_metadata?.avatar_url || "https://via.placeholder.com/32";
+    const userName = data.session.user.user_metadata?.full_name || data.session.user.email;
+    document.getElementById("user-profile-pic").src = userPic;
+    document.getElementById("user-name").textContent = userName;
   } else {
     console.warn("No authenticated user found in session.");
   }
@@ -36,7 +41,7 @@ async function fetchWorkouts() {
   return data;
 }
 
-// הוספת אימון חדש (upsert כדי למנוע כפילויות, לפי video_id)
+// הוספת אימון חדש (upsert למניעת כפילויות לפי video_id)
 async function addWorkout(workoutData) {
   const { data, error } = await supabaseClient
     .from("workouts")
@@ -77,7 +82,7 @@ async function updateWorkout(videoId, updatedData) {
 
 // --- פונקציות להצגת המידע בממשק ---
 
-// הצגת כל האימונים
+// הצגת כל האימונים (עם כרטיסים ממוינים לימין)
 async function showAllWorkouts() {
   const workouts = await fetchWorkouts();
   const content = document.getElementById("content-area");
@@ -99,7 +104,6 @@ async function showAllWorkouts() {
       </div>
     `).join("");
   }
-  // הוספת מאזיני אירועים לכפתורי מחיקה
   const deleteButtons = document.querySelectorAll(".delete-workout-btn");
   deleteButtons.forEach(button => {
     button.addEventListener("click", function() {
@@ -113,7 +117,7 @@ async function showAllWorkouts() {
   });
 }
 
-// הצגת אימון יומי
+// הצגת אימון יומי (עם כרטיס מידע ממויין לימין)
 async function showTodaysWorkout() {
   const workouts = await fetchWorkouts();
   const content = document.getElementById("content-area");
@@ -275,7 +279,7 @@ async function getVideoInfo(url) {
   }
 }
 
-// אתחול סרגל הצד והאזנה לאירועים
+// אתחול סרגל הצד והאזנה לאירועים עבור שני סוגי ניווט (מובייל ודסקטופ)
 document.addEventListener("DOMContentLoaded", function() {
   // מאזין לכל כפתורי "Today's Workout"
   const navTodaysButtons = document.querySelectorAll(".nav-todays");
@@ -322,7 +326,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 
-  // מאזין לכל כפתורי "Logout"
+  // מאזין לכל כפתורי "Logout" (גם במובייל וגם בדסקטופ)
   const navLogoutButtons = document.querySelectorAll(".nav-logout");
   navLogoutButtons.forEach(btn => {
     btn.addEventListener("click", () => {

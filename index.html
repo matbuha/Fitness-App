@@ -77,18 +77,21 @@
             </li>
           </ul>
           <hr>
-          <div class="dropdown">
-            <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-              <img src="https://lh3.googleusercontent.com/a/ACg8ocKd2p17vEafitMC6ENmHJKSBqCEPBHm2BGwWzM5kyVGL7PgJULaPA=s96-c" alt="" width="32" height="32" class="rounded-circle me-2">
-              <strong>Ariel Ben Zikri</strong>
-            </a>
-            <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
-              <li><a class="dropdown-item" href="#">New project...</a></li>
-              <li><a class="dropdown-item" href="#">Settings</a></li>
-              <li><a class="dropdown-item" href="#">Profile</a></li>
-              <li><hr class="dropdown-divider"></li>
-              <li><a class="dropdown-item nav-logout" id="btn-logout-desktop" href="#">Sign out</a></li>
-            </ul>
+          <!-- פרופיל משתמש - יוצג בתחתית הסרגל הקבוע -->
+          <div class="mt-auto">
+            <div class="dropdown">
+              <a href="#" class="d-flex align-items-center text-dark text-decoration-none dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                <img id="user-profile-pic" src="" alt="Profile" width="32" height="32" class="rounded-circle me-2">
+                <strong id="user-name">User Name</strong>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark text-small shadow">
+                <li><a class="dropdown-item" href="#">New project...</a></li>
+                <li><a class="dropdown-item" href="#">Settings</a></li>
+                <li><a class="dropdown-item" href="#">Profile</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item nav-logout" id="btn-logout-desktop" href="#">Sign out</a></li>
+              </ul>
+            </div>
           </div>
         </nav>
         <!-- Main Content Area -->
