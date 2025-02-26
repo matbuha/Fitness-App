@@ -1,5 +1,8 @@
 // auth.js
 
+// pendingSignUpData מוגדר במרחב גלובלי
+let pendingSignUpData = null;
+
 // יצירת לקוח Supabase
 const supabaseUrl = "https://kmwvlpganjabpcqsnrkx.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imttd3ZscGdhbmphYnBjcXNucmt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NzU1MjgsImV4cCI6MjA1NTQ1MTUyOH0.MZhYAWfFI7YTDde44SIhZfSovqCT8DYAZbgtRw7nOEs";
@@ -32,11 +35,8 @@ window.handleSignInWithGoogle = async function(response) {
   }
 };
 
-/* משתנה גלובלי לאחסון נתוני ההרשמה עד לקבלת טוקן hCaptcha */
-let pendingSignUpData = null;
-
-//  מאזין לטופס ההתחברות באמצעות אימייל וסיסמה (Sign In)
 document.addEventListener("DOMContentLoaded", function() {
+  // Email Sign In
   const emailLoginForm = document.getElementById("email-login-form");
   if (emailLoginForm) {
     emailLoginForm.addEventListener("submit", async function(e) {
@@ -66,9 +66,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-
-
-  /* מאזין לטופס ההרשמה (Sign Up) */
+  // Email Sign Up with hCaptcha Invisible
   const emailSignupForm = document.getElementById("email-signup-form");
   if (emailSignupForm) {
     emailSignupForm.addEventListener("submit", function(e) {
@@ -82,12 +80,12 @@ document.addEventListener("DOMContentLoaded", function() {
         return;
       }
       
-      // שמירת נתוני ההרשמה למשתנה גלובלי
+      // שמירת נתוני ההרשמה במשתנה הגלובלי
       pendingSignUpData = { email, password };
       
-      // ודא ש-hCaptcha נטען - נשתמש בפונקציה waitForHCaptcha
+      // המתנה שה-hCaptcha נטען ואז קריאה ל-execute
       waitForHCaptcha().then(() => {
-        window.hcaptcha.execute(); // פעולה זו תגרום לקריאה לפונקציה onHCaptchaSuccess כאשר hCaptcha תצליח
+        window.hcaptcha.execute();
       }).catch((err) => {
         alert("hCaptcha not loaded: " + err.message);
       });
@@ -96,8 +94,7 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 
 /*
-  פונקציה לחכות שה-hCaptcha נטען.
-  מחכה עד 5 שניות עד שהחלון window.hcaptcha יהיה זמין.
+  פונקציה לחכות שה-hCaptcha נטען (עד 5 שניות)
 */
 function waitForHCaptcha(timeout = 5000) {
   return new Promise((resolve, reject) => {
@@ -118,8 +115,8 @@ function waitForHCaptcha(timeout = 5000) {
 }
 
 /*
-  פונקציה זו תקרא כאשר hCaptcha Invisible מסיים בהצלחה ומחזירה טוקן.
-  אנו משתמשים בטוקן זה כדי לבצע את ההרשמה עם Supabase.
+  onHCaptchaSuccess - תופעל כאשר hCaptcha Invisible מצליחה ומחזירה טוקן.
+  משתמשים בטוקן זה כדי לבצע את ההרשמה עם Supabase.
 */
 async function onHCaptchaSuccess(captchaToken) {
   if (!pendingSignUpData) {
@@ -138,7 +135,7 @@ async function onHCaptchaSuccess(captchaToken) {
     } else {
       console.log("Sign up successful!", data);
       alert("Sign up successful! Please check your email to confirm your account.");
-      window.location.href = "auth.html"; // או לדף התחברות, בהתאם לצורך
+      window.location.href = "auth.html";
     }
   } catch (err) {
     console.error("Unexpected error during sign up:", err);
@@ -146,12 +143,12 @@ async function onHCaptchaSuccess(captchaToken) {
   }
 }
 
-// הפיכת onHCaptchaSuccess לזמינה גלובלי כך ש-hCaptcha תוכל לגשת אליה
+// הפיכת onHCaptchaSuccess לזמינה גלובלי כדי ש-hCaptcha תוכל לגשת אליה
 window.onHCaptchaSuccess = onHCaptchaSuccess;
 
 /*
   פונקציית onLoad - לפי דוקומנטציית hCaptcha, נקראת כאשר הסקריפט נטען.
-  במקרה שלנו, אין צורך לבצע כאן הגדרות נוספות, אך נוודא שהפונקציה זמינה.
+  במקרה שלנו, אנו רק מדפיסים הודעה.
 */
 function onLoad() {
   console.log("hCaptcha script loaded.");
