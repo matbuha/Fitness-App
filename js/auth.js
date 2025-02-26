@@ -65,10 +65,13 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
+  /* משתנה גלובלי לאחסון נתוני ההרשמה עד לקבלת טוקן hCaptcha */
+  let pendingSignUpData = null;
+
   /* מאזין לטופס ההרשמה (Sign Up) */
   const emailSignupForm = document.getElementById("email-signup-form");
   if (emailSignupForm) {
-    emailSignupForm.addEventListener("submit", async function(e) {
+    emailSignupForm.addEventListener("submit", function(e) {
       e.preventDefault();
       const email = document.getElementById("signup-email").value;
       const password = document.getElementById("signup-password").value;
@@ -79,24 +82,47 @@ document.addEventListener("DOMContentLoaded", function() {
         return;
       }
       
-      try {
-        const { data, error } = await supabaseClient.auth.signUp({
-          email: email,
-          password: password
-        });
-        if (error) {
-          console.error("Error signing up:", error);
-          alert("Error signing up: " + error.message);
-        } else {
-          console.log("Sign up successful!", data);
-          alert("Sign up successful! Please check your email to confirm your account.");
-          // במידת הצורך, ניתן לשמור טוקן או להפנות לדף התחברות
-          window.location.href = "auth.html";  // או לדף התחברות
-        }
-      } catch (err) {
-        console.error("Unexpected error during sign up:", err);
-        alert("Unexpected error during sign up.");
+      // שמירת נתוני ההרשמה למשתנה גלובלי
+      pendingSignUpData = { email, password };
+      
+      // הפעלת hCaptcha Invisible
+      if (window.hcaptcha) {
+        window.hcaptcha.execute(); // פעולה זו תגרום לקריאה לפונקציה onHCaptchaSuccess כאשר hCaptcha תצליח
+      } else {
+        alert("hCaptcha not loaded. Please try again later.");
       }
     });
   }
 });
+
+/*
+  פונקציה זו תקרא כאשר hCaptcha Invisible מסיים בהצלחה ומחזירה טוקן.
+  אנו משתמשים בטוקן זה כדי לבצע את ההרשמה עם Supabase.
+*/
+async function onHCaptchaSuccess(captchaToken) {
+  if (!pendingSignUpData) {
+    console.error("No sign up data pending.");
+    return;
+  }
+  try {
+    const { data, error } = await supabaseClient.auth.signUp({
+      email: pendingSignUpData.email,
+      password: pendingSignUpData.password,
+      captcha_token: captchaToken
+    });
+    if (error) {
+      console.error("Error signing up:", error);
+      alert("Error signing up: " + error.message);
+    } else {
+      console.log("Sign up successful!", data);
+      alert("Sign up successful! Please check your email to confirm your account.");
+      window.location.href = "auth.html"; // הפנייה לדף ההתחברות, או כפי שמתאים
+    }
+  } catch (err) {
+    console.error("Unexpected error during sign up:", err);
+    alert("Unexpected error during sign up.");
+  }
+}
+
+// הפיכת onHCaptchaSuccess לזמינה גלובלי כך ש-hCaptcha תוכל לגשת אליה
+window.onHCaptchaSuccess = onHCaptchaSuccess;

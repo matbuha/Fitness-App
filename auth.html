@@ -362,6 +362,11 @@
               <input type="password" class="form-control" id="signup-confirm-password" placeholder="Confirm Password" required>
               <i>Confirm Password</i>
             </div>
+            <div id="hcaptcha-container" class="d-none" 
+              data-sitekey="b50c18f6-a7f4-4746-99d8-46306b366220" 
+              data-size="invisible" 
+              data-callback="onHCaptchaSuccess">
+            </div>
             <div class="inputBox">
               <input type="submit" class="btn btn-primary w-100" value="Sign Up">
             </div>
@@ -374,5 +379,7 @@
 
   <!-- טעינת קובץ ה-JS לאימות -->
   <script src="js/auth.js" type="module"></script>
+  <!-- hCaptcha Script -->
+  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 </body>
 </html>
