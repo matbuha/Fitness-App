@@ -8,9 +8,9 @@ const supabaseUrl = "https://kmwvlpganjabpcqsnrkx.supabase.co";
 const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imttd3ZscGdhbmphYnBjcXNucmt4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Mzk4NzU1MjgsImV4cCI6MjA1NTQ1MTUyOH0.MZhYAWfFI7YTDde44SIhZfSovqCT8DYAZbgtRw7nOEs";
 const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
 
-/* 
-  Google Sign In - מופעל על ידי Google Identity Services
-*/
+console.log("auth.js loaded");
+
+// Google Sign In
 window.handleSignInWithGoogle = async function(response) {
   console.log("Google response:", response);
   try {
@@ -41,8 +41,10 @@ document.addEventListener("DOMContentLoaded", function() {
   if (emailLoginForm) {
     emailLoginForm.addEventListener("submit", async function(e) {
       e.preventDefault();
+      console.log("Email login form submitted");
       const email = document.getElementById("email").value;
       const password = document.getElementById("password").value;
+      console.log("Email:", email, "Password:", password);
       try {
         const { data, error } = await supabaseClient.auth.signInWithPassword({
           email: email,
@@ -71,22 +73,26 @@ document.addEventListener("DOMContentLoaded", function() {
   if (emailSignupForm) {
     emailSignupForm.addEventListener("submit", function(e) {
       e.preventDefault();
+      console.log("Sign up form submitted");
       const email = document.getElementById("signup-email").value;
       const password = document.getElementById("signup-password").value;
       const confirmPassword = document.getElementById("signup-confirm-password").value;
+      
+      console.log("Sign up details:", { email, password, confirmPassword });
       
       if (password !== confirmPassword) {
         alert("Passwords do not match. Please try again.");
         return;
       }
       
-      // שמירת נתוני ההרשמה במשתנה הגלובלי
       pendingSignUpData = { email, password };
+      console.log("Pending sign up data stored:", pendingSignUpData);
       
-      // המתנה שה-hCaptcha נטען ואז קריאה ל-execute
       waitForHCaptcha().then(() => {
+        console.log("hCaptcha loaded, executing challenge");
         window.hcaptcha.execute();
       }).catch((err) => {
+        console.error("hCaptcha failed to load:", err);
         alert("hCaptcha not loaded: " + err.message);
       });
     });
@@ -97,11 +103,13 @@ document.addEventListener("DOMContentLoaded", function() {
   פונקציה לחכות שה-hCaptcha נטען (עד 5 שניות)
 */
 function waitForHCaptcha(timeout = 5000) {
+  console.log("Waiting for hCaptcha to load...");
   return new Promise((resolve, reject) => {
     const interval = 100;
     let elapsed = 0;
     const timer = setInterval(() => {
       if (window.hcaptcha) {
+        console.log("hCaptcha is available");
         clearInterval(timer);
         resolve();
       }
@@ -116,9 +124,9 @@ function waitForHCaptcha(timeout = 5000) {
 
 /*
   onHCaptchaSuccess - תופעל כאשר hCaptcha Invisible מצליחה ומחזירה טוקן.
-  אנו משתמשים בטוקן זה כדי לבצע את ההרשמה עם Supabase.
 */
 async function onHCaptchaSuccess(captchaToken) {
+  console.log("onHCaptchaSuccess called with token:", captchaToken);
   if (!pendingSignUpData) {
     console.error("No sign up data pending.");
     return;
@@ -143,19 +151,20 @@ async function onHCaptchaSuccess(captchaToken) {
   }
 }
 
-// onHCaptchaSuccess מופעלת כאשר hCaptcha Invisible מצליחה
+// הפיכת onHCaptchaSuccess לזמינה גלובלי
 window.onHCaptchaSuccess = onHCaptchaSuccess;
 
 /*
-  onHCaptchaError - תופעל כאשר hCaptcha Invisible נתקלת בשגיאה או שהמשתמש בחר לדחות את האתגר.
+  onHCaptchaError - תופעל כאשר hCaptcha נתקלת בשגיאה או שהמשתמש דוחה את האתגר.
 */
 function onHCaptchaError() {
+  console.error("hCaptcha challenge failed or was dismissed.");
   alert("Captcha challenge was not completed. Please try again.");
 }
 window.onHCaptchaError = onHCaptchaError;
 
 /*
-  פונקציית onLoad - נקראת כאשר סקריפט hCaptcha נטען.
+  onLoad - נקראת כאשר הסקריפט של hCaptcha נטען.
 */
 function onLoad() {
   console.log("hCaptcha script loaded.");

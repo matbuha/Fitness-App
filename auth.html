@@ -15,8 +15,7 @@
   <script src="https://accounts.google.com/gsi/client" async></script>
   <!-- Bootstrap Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-  <!-- hcaptcha -->
-  <script src="https://js.hcaptcha.com/1/api.js?onload=onLoad" async defer></script>
+
 </head>
 <body>
   <!-- Animated Background Section -->
@@ -370,6 +369,7 @@
               data-callback="onHCaptchaSuccess"
               data-error-callback="onHCaptchaError">
             </div>
+       
             <div class="inputBox">
               <input id="submit" type="submit" class="btn btn-primary w-100" value="Sign Up">
             </div>
@@ -386,5 +386,7 @@
   </div>
   <!-- טעינת קובץ ה-JS לאימות -->
   <script src="js/auth.js" type="module"></script>
+  <!-- hcaptcha -->
+  <script src="https://js.hcaptcha.com/1/api.js?onload=onLoad" async defer></script>
 </body>
 </html>
