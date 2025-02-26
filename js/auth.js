@@ -116,7 +116,7 @@ function waitForHCaptcha(timeout = 5000) {
 
 /*
   onHCaptchaSuccess - תופעל כאשר hCaptcha Invisible מצליחה ומחזירה טוקן.
-  משתמשים בטוקן זה כדי לבצע את ההרשמה עם Supabase.
+  אנו משתמשים בטוקן זה כדי לבצע את ההרשמה עם Supabase.
 */
 async function onHCaptchaSuccess(captchaToken) {
   if (!pendingSignUpData) {
@@ -143,12 +143,19 @@ async function onHCaptchaSuccess(captchaToken) {
   }
 }
 
-// הפיכת onHCaptchaSuccess לזמינה גלובלי כדי ש-hCaptcha תוכל לגשת אליה
+// onHCaptchaSuccess מופעלת כאשר hCaptcha Invisible מצליחה
 window.onHCaptchaSuccess = onHCaptchaSuccess;
 
 /*
-  פונקציית onLoad - לפי דוקומנטציית hCaptcha, נקראת כאשר הסקריפט נטען.
-  במקרה שלנו, אנו רק מדפיסים הודעה.
+  onHCaptchaError - תופעל כאשר hCaptcha Invisible נתקלת בשגיאה או שהמשתמש בחר לדחות את האתגר.
+*/
+function onHCaptchaError() {
+  alert("Captcha challenge was not completed. Please try again.");
+}
+window.onHCaptchaError = onHCaptchaError;
+
+/*
+  פונקציית onLoad - נקראת כאשר סקריפט hCaptcha נטען.
 */
 function onLoad() {
   console.log("hCaptcha script loaded.");
