@@ -85,15 +85,37 @@ document.addEventListener("DOMContentLoaded", function() {
       // שמירת נתוני ההרשמה למשתנה גלובלי
       pendingSignUpData = { email, password };
       
-      // הפעלת hCaptcha Invisible
-      if (window.hcaptcha) {
+      // ודא ש-hCaptcha נטען - נשתמש בפונקציה waitForHCaptcha
+      waitForHCaptcha().then(() => {
         window.hcaptcha.execute(); // פעולה זו תגרום לקריאה לפונקציה onHCaptchaSuccess כאשר hCaptcha תצליח
-      } else {
-        alert("hCaptcha not loaded. Please try again later.");
-      }
+      }).catch((err) => {
+        alert("hCaptcha not loaded: " + err.message);
+      });
     });
   }
 });
+
+/*
+  פונקציה לחכות שה-hCaptcha נטען.
+  מחכה עד 5 שניות עד שהחלון window.hcaptcha יהיה זמין.
+*/
+function waitForHCaptcha(timeout = 5000) {
+  return new Promise((resolve, reject) => {
+    const interval = 100;
+    let elapsed = 0;
+    const timer = setInterval(() => {
+      if (window.hcaptcha) {
+        clearInterval(timer);
+        resolve();
+      }
+      elapsed += interval;
+      if (elapsed >= timeout) {
+        clearInterval(timer);
+        reject(new Error("hCaptcha did not load within timeout"));
+      }
+    }, interval);
+  });
+}
 
 /*
   פונקציה זו תקרא כאשר hCaptcha Invisible מסיים בהצלחה ומחזירה טוקן.
@@ -116,7 +138,7 @@ async function onHCaptchaSuccess(captchaToken) {
     } else {
       console.log("Sign up successful!", data);
       alert("Sign up successful! Please check your email to confirm your account.");
-      window.location.href = "auth.html"; // הפנייה לדף ההתחברות, או כפי שמתאים
+      window.location.href = "auth.html"; // או לדף התחברות, בהתאם לצורך
     }
   } catch (err) {
     console.error("Unexpected error during sign up:", err);
