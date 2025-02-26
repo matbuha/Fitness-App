@@ -109,6 +109,10 @@ section span:hover {
   width: 100%;
 }
 
+.white-text{
+  color: #fff !important;
+}
+
 .signin .content .form .inputBox input {
   position: relative;
   width: 100%;
@@ -122,12 +126,12 @@ section span:hover {
   font-size: 1em;
 }
 
-.signin .content .form .inputBox i {
+.signin .content .form .inputBox {
   position: absolute;
   left: 0;
   padding: 15px 10px;
   font-style: normal;
-  color: #aaa;
+  color: #ffffff;
   transition: 0.5s;
   pointer-events: none;
 }
@@ -168,7 +172,7 @@ section span:hover {
 .signin .content .form .inputBox input[type="submit"] {
   padding: 10px;
   background: #f00;
-  color: #000;
+  /* color: #000; */
   font-weight: 600;
   font-size: 1.35em;
   letter-spacing: 0.05em;
@@ -205,3 +209,7 @@ border: 2px solid transparent;
 color: #f00 !important; /* טאב פעיל – אדום */
 border-color: #f00 !important;
 }
+
+
+
+
