@@ -32,9 +32,10 @@ window.handleSignInWithGoogle = async function(response) {
   }
 };
 
-/*
-  מאזין לטופס ההתחברות באמצעות אימייל וסיסמה (Sign In)
-*/
+/* משתנה גלובלי לאחסון נתוני ההרשמה עד לקבלת טוקן hCaptcha */
+let pendingSignUpData = null;
+
+//  מאזין לטופס ההתחברות באמצעות אימייל וסיסמה (Sign In)
 document.addEventListener("DOMContentLoaded", function() {
   const emailLoginForm = document.getElementById("email-login-form");
   if (emailLoginForm) {
@@ -65,8 +66,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  /* משתנה גלובלי לאחסון נתוני ההרשמה עד לקבלת טוקן hCaptcha */
-  let pendingSignUpData = null;
+
 
   /* מאזין לטופס ההרשמה (Sign Up) */
   const emailSignupForm = document.getElementById("email-signup-form");
