@@ -148,3 +148,12 @@ async function onHCaptchaSuccess(captchaToken) {
 
 // הפיכת onHCaptchaSuccess לזמינה גלובלי כך ש-hCaptcha תוכל לגשת אליה
 window.onHCaptchaSuccess = onHCaptchaSuccess;
+
+/*
+  פונקציית onLoad - לפי דוקומנטציית hCaptcha, נקראת כאשר הסקריפט נטען.
+  במקרה שלנו, אין צורך לבצע כאן הגדרות נוספות, אך נוודא שהפונקציה זמינה.
+*/
+function onLoad() {
+  console.log("hCaptcha script loaded.");
+}
+window.onLoad = onLoad;

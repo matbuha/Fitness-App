@@ -15,6 +15,8 @@
   <script src="https://accounts.google.com/gsi/client" async></script>
   <!-- Bootstrap Bundle JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  <!-- hcaptcha -->
+  <script src="https://js.hcaptcha.com/1/api.js?onload=onLoad" async defer></script>
 </head>
 <body>
   <!-- Animated Background Section -->
@@ -362,24 +364,24 @@
               <input type="password" class="form-control" id="signup-confirm-password" placeholder="Confirm Password" required>
               <i>Confirm Password</i>
             </div>
-            <div id="hcaptcha-container" class="d-none" 
+            <div id="hcaptcha" class="h-captcha" 
               data-sitekey="b50c18f6-a7f4-4746-99d8-46306b366220" 
               data-size="invisible" 
-              data-callback="onHCaptchaSuccess">
+              data-callback="onSubmit">
             </div>
             <div class="inputBox">
-              <input type="submit" class="btn btn-primary w-100" value="Sign Up">
+              <input id="submit" type="submit" class="btn btn-primary w-100" value="Sign Up">
             </div>
           </form>
         </div>
       </div>
+      This site is protected by hCaptcha and its
+      <a href="https://www.hcaptcha.com/privacy">Privacy Policy</a> and
+      <a href="https://www.hcaptcha.com/terms">Terms of Service</a> apply.
       <p class="mt-4 mb-0 text-body-secondary text-center">© 2025 Fitness App</p>
     </div>
   </div>
-
   <!-- טעינת קובץ ה-JS לאימות -->
   <script src="js/auth.js" type="module"></script>
-  <!-- hCaptcha Script -->
-  <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 </body>
 </html>
